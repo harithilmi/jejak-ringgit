@@ -21,6 +21,8 @@ export function transactionReducer(state, action) {
 					? { ...transaction, ...action.payload.updatedTransaction }
 					: transaction,
 			)
+		case 'UPDATE_TRANSACTIONS':
+			return action.payload
 		default:
 			return state
 	}

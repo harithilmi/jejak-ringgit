@@ -25,8 +25,12 @@ export function TransactionProvider({ children }) {
 	dispatch({ type: 'EDIT_TRANSACTION', payload: { id, updatedTransaction } })
   }
 
+  const updateTransactions = (transactions) => {
+    dispatch({ type: 'UPDATE_TRANSACTIONS', payload: transactions })
+  }
+
   return (
-    <TransactionContext.Provider value={{ transactions, addTransaction, deleteTransaction, editTransaction }}>
+    <TransactionContext.Provider value={{ transactions, addTransaction, deleteTransaction, editTransaction, updateTransactions }}>
       {children}
     </TransactionContext.Provider>
   )

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTransaction } from '../context/TransactionContext'
+import axios from 'axios'
 
 export function NewTransactionForm() {
   const [description, setDescription] = useState('')
@@ -74,18 +75,28 @@ export function NewTransactionForm() {
     }
   }, [highlightedIndex, isTypeDropdownOpen])
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (description === '' || amount === '') return
-    addTransaction(description, parseFloat(amount) / 100, date, type)
-    setDescription('')
-    setAmount('')
-    setType('expense')
-    const currentDate = new Date().toISOString().split('T')[0]
-    setDate(currentDate)
-    
-    if (descriptionInputRef.current) {
-      descriptionInputRef.current.focus()
+    try {
+      const response = await axios.post('/.netlify/functions/api/transactions', {
+        description,
+        amount: parseFloat(amount) / 100,
+        date,
+        type
+      })
+      addTransaction(response.data)
+      setDescription('')
+      setAmount('')
+      setType('expense')
+      const currentDate = new Date().toISOString().split('T')[0]
+      setDate(currentDate)
+      
+      if (descriptionInputRef.current) {
+        descriptionInputRef.current.focus()
+      }
+    } catch (error) {
+      console.error('Error adding transaction:', error)
     }
   }
 

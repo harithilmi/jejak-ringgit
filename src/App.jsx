@@ -5,11 +5,19 @@ import Navbar from './components/Navbar'
 import Overview from './components/Overview'
 import axios from 'axios'
 import { useEffect } from 'react'
+import { useTransaction } from './context/TransactionContext'
 
 export default function App() {
+  const { updateTransactions } = useTransaction()
 
   const fetchAPI = async () => {
-	  const response = await axios.get('/.netlify/functions/api/transactions')
+    try {
+      const response = await axios.get('/.netlify/functions/api/transactions')
+      console.log(response.data)
+      updateTransactions(response.data)
+    } catch (error) {
+      console.error('Error fetching transactions:', error)
+    }
   }
 
   useEffect(() => {
