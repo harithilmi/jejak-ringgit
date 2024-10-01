@@ -3,8 +3,19 @@ import { TransactionList } from './components/TransactionList'
 import { TransactionProvider } from './components/TransactionContextProvider'
 import Navbar from './components/Navbar'
 import Overview from './components/Overview'
+import axios from 'axios'
+import { useEffect } from 'react'
 
 export default function App() {
+
+  const fetchAPI = async () => {
+	  const response = await axios.get('/.netlify/functions/api/transactions')
+  }
+
+  useEffect(() => {
+    fetchAPI()
+  }, [])
+
   return (
     <>
       <Navbar />
