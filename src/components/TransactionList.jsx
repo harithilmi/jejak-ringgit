@@ -2,7 +2,6 @@ import { useTransaction } from '../context/TransactionContext'
 import CurrencyFormat from './CurrencyFormat'
 import { useState } from 'react'
 import { EditTransactionModal } from './EditTransactionModal'
-import axios from 'axios'
 
 export function TransactionList() {
   const { transactions, deleteTransaction } = useTransaction()
@@ -49,15 +48,6 @@ export function TransactionList() {
   const handleEditClose = () => {
     setIsEditModalOpen(false)
     setEditingTransaction(null)
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/.netlify/functions/api/transactions/${id}`)
-      deleteTransaction(id)
-    } catch (error) {
-      console.error('Error deleting transaction:', error)
-    }
   }
 
   return (
@@ -131,7 +121,7 @@ export function TransactionList() {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(transaction.id)}
+                      onClick={() => deleteTransaction(transaction.id)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
                       Delete

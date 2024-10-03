@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTransaction } from '../context/TransactionContext'
-import axios from 'axios'
 
 export function NewTransactionForm() {
   const [description, setDescription] = useState('')
@@ -75,28 +74,18 @@ export function NewTransactionForm() {
     }
   }, [highlightedIndex, isTypeDropdownOpen])
 
-  const handleSubmit = async (e) => {
+  function handleSubmit(e) {
     e.preventDefault()
     if (description === '' || amount === '') return
-    try {
-      const response = await axios.post('/.netlify/functions/api/transactions', {
-        description,
-        amount: parseFloat(amount) / 100,
-        date,
-        type
-      })
-      addTransaction(response.data)
-      setDescription('')
-      setAmount('')
-      setType('expense')
-      const currentDate = new Date().toISOString().split('T')[0]
-      setDate(currentDate)
-      
-      if (descriptionInputRef.current) {
-        descriptionInputRef.current.focus()
-      }
-    } catch (error) {
-      console.error('Error adding transaction:', error)
+    addTransaction(description, parseFloat(amount) / 100, date, type)
+    setDescription('')
+    setAmount('')
+    setType('expense')
+    const currentDate = new Date().toISOString().split('T')[0]
+    setDate(currentDate)
+    
+    if (descriptionInputRef.current) {
+      descriptionInputRef.current.focus()
     }
   }
 
@@ -133,7 +122,7 @@ export function NewTransactionForm() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 focus-visible:outline-none"
-                placeholder="Description"
+                placeholder="Expense description"
               />
             </div>
           </div>
