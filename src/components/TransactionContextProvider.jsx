@@ -13,8 +13,8 @@ export function TransactionProvider({ children }) {
     localStorage.setItem('TRANSACTIONS', JSON.stringify(transactions))
   }, [transactions])
 
-  const addTransaction = (description, amount, date, type) => {
-    dispatch({ type: 'ADD_TRANSACTION', payload: { description, amount, date, type } })
+  const addTransaction = (description, amount, date, type, isSplit, splitDetails, includeInTotal) => {
+    dispatch({ type: 'ADD_TRANSACTION', payload: { description, amount, date, type, isSplit, splitDetails, includeInTotal } })
   }
 
   const deleteTransaction = (id) => {
@@ -22,7 +22,19 @@ export function TransactionProvider({ children }) {
   }
 	
   const editTransaction = (id, updatedTransaction) => {
-	dispatch({ type: 'EDIT_TRANSACTION', payload: { id, updatedTransaction } })
+    dispatch({ 
+      type: 'EDIT_TRANSACTION', 
+      payload: { 
+        id, 
+        updatedTransaction: {
+          ...updatedTransaction,
+          splitDetails: updatedTransaction.splitDetails?.map(detail => ({
+            ...detail,
+            amount: parseFloat(detail.amount)
+          }))
+        } 
+      } 
+    })
   }
 
   return (

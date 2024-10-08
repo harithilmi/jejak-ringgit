@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTransaction } from '../context/TransactionContext'
 import PropTypes from 'prop-types'
+import CurrencyFormat from './CurrencyFormat'
 
 export function EditTransactionModal({ transaction, onClose }) {
   const [description, setDescription] = useState(transaction.description)
   const [amount, setAmount] = useState(transaction.amount * 100)
   const [date, setDate] = useState(transaction.date)
   const [type, setType] = useState(transaction.type)
+  const [isSplit, setIsSplit] = useState(transaction.isSplit || false)
+  const [splitDetails, setSplitDetails] = useState(transaction.splitDetails || [])
+  const [includeInTotal, setIncludeInTotal] = useState(transaction.includeInTotal !== false)
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
   const dropdownRef = useRef(null)
@@ -82,7 +86,15 @@ export function EditTransactionModal({ transaction, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    editTransaction(transaction.id, { description, amount: amount / 100, date, type })
+    editTransaction(transaction.id, { 
+      description, 
+      amount: amount / 100, 
+      date, 
+      type,
+      isSplit,
+      splitDetails,
+      includeInTotal
+    })
     onClose()
   }
 
@@ -101,6 +113,21 @@ export function EditTransactionModal({ transaction, onClose }) {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numericValue / 100)
+  }
+
+  function handleSplitDetailChange(index, field, value) {
+    const updatedSplitDetails = [...splitDetails]
+    updatedSplitDetails[index][field] = value
+    setSplitDetails(updatedSplitDetails)
+  }
+
+  function addSplitDetail() {
+    setSplitDetails([...splitDetails, { name: '', amount: '', paid: false }])
+  }
+
+  function removeSplitDetail(index) {
+    const updatedSplitDetails = splitDetails.filter((_, i) => i !== index)
+    setSplitDetails(updatedSplitDetails)
   }
 
   return (
@@ -157,7 +184,7 @@ export function EditTransactionModal({ transaction, onClose }) {
                   </span>
                   <span className="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </span>
                 </button>
@@ -211,6 +238,69 @@ export function EditTransactionModal({ transaction, onClose }) {
                 />
               </div>
             </div>
+
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isSplit}
+                  onChange={(e) => setIsSplit(e.target.checked)}
+                  className="mr-2"
+                />
+                Split transaction
+              </label>
+            </div>
+
+            {isSplit && (
+              <div>
+                <h4 className="text-md font-medium mb-2">Split Details</h4>
+                {splitDetails.map((detail, index) => (
+                  <div key={index} className="flex items-center mb-2">
+                    <input
+                      type="text"
+                      value={detail.name}
+                      onChange={(e) => handleSplitDetailChange(index, 'name', e.target.value)}
+                      placeholder="Name"
+                      className="mr-2 p-1 border rounded"
+                    />
+                    <input
+                      type="number"
+                      value={detail.amount}
+                      onChange={(e) => handleSplitDetailChange(index, 'amount', parseFloat(e.target.value))}
+                      placeholder="Amount"
+                      className="mr-2 p-1 border rounded"
+                    />
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={detail.paid}
+                        onChange={(e) => handleSplitDetailChange(index, 'paid', e.target.checked)}
+                        className="mr-1"
+                      />
+                      Paid
+                    </label>
+                    <button type="button" onClick={() => removeSplitDetail(index)} className="ml-2 text-red-500">
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button type="button" onClick={addSplitDetail} className="mt-2 bg-blue-500 text-white px-2 py-1 rounded">
+                  Add Split Detail
+                </button>
+              </div>
+            )}
+
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={includeInTotal}
+                  onChange={(e) => setIncludeInTotal(e.target.checked)}
+                  className="mr-2"
+                />
+                Include in total
+              </label>
+            </div>
           </div>
           <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
             <button
@@ -240,6 +330,15 @@ EditTransactionModal.propTypes = {
     amount: PropTypes.number.isRequired,
     date: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    isSplit: PropTypes.bool,
+    splitDetails: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        amount: PropTypes.number.isRequired,
+        paid: PropTypes.bool.isRequired,
+      })
+    ),
+    includeInTotal: PropTypes.bool,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
 }

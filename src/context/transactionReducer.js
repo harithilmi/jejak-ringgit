@@ -11,6 +11,9 @@ export function transactionReducer(state, action) {
 					amount: action.payload.amount,
 					date: action.payload.date,
 					type: action.payload.type,
+					isSplit: action.payload.isSplit || false,
+					splitDetails: action.payload.splitDetails || [],
+					includeInTotal: action.payload.includeInTotal !== false,
 				},
 			]
 		case 'DELETE_TRANSACTION':
@@ -18,7 +21,13 @@ export function transactionReducer(state, action) {
 		case 'EDIT_TRANSACTION':
 			return state.map((transaction) =>
 				transaction.id === action.payload.id
-					? { ...transaction, ...action.payload.updatedTransaction }
+					? { 
+						...transaction, 
+						...action.payload.updatedTransaction,
+						isSplit: action.payload.updatedTransaction.isSplit || false,
+						splitDetails: action.payload.updatedTransaction.splitDetails || [],
+						includeInTotal: action.payload.updatedTransaction.includeInTotal !== false,
+					}
 					: transaction,
 			)
 		default:
