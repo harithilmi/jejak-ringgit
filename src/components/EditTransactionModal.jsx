@@ -1,16 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTransaction } from '../context/TransactionContext'
 import PropTypes from 'prop-types'
-import CurrencyFormat from './CurrencyFormat'
 
 export function EditTransactionModal({ transaction, onClose }) {
   const [description, setDescription] = useState(transaction.description)
   const [amount, setAmount] = useState(transaction.amount * 100)
   const [date, setDate] = useState(transaction.date)
   const [type, setType] = useState(transaction.type)
-  const [isSplit, setIsSplit] = useState(transaction.isSplit || false)
-  const [splitDetails, setSplitDetails] = useState(transaction.splitDetails || [])
-  const [includeInTotal, setIncludeInTotal] = useState(transaction.includeInTotal !== false)
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
   const dropdownRef = useRef(null)
@@ -23,7 +19,8 @@ export function EditTransactionModal({ transaction, onClose }) {
       if (e.key === 'Escape') {
         onClose()
       }
-    }
+	}
+	  
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
   }, [onClose])
@@ -84,16 +81,13 @@ export function EditTransactionModal({ transaction, onClose }) {
     }
   }, [highlightedIndex, isTypeDropdownOpen])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    editTransaction(transaction.id, { 
-      description, 
-      amount: amount / 100, 
-      date, 
+    await editTransaction(transaction.id, {
+      description,
+      amount: amount / 100,
+      date,
       type,
-      isSplit,
-      splitDetails,
-      includeInTotal
     })
     onClose()
   }
@@ -113,21 +107,6 @@ export function EditTransactionModal({ transaction, onClose }) {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numericValue / 100)
-  }
-
-  function handleSplitDetailChange(index, field, value) {
-    const updatedSplitDetails = [...splitDetails]
-    updatedSplitDetails[index][field] = value
-    setSplitDetails(updatedSplitDetails)
-  }
-
-  function addSplitDetail() {
-    setSplitDetails([...splitDetails, { name: '', amount: '', paid: false }])
-  }
-
-  function removeSplitDetail(index) {
-    const updatedSplitDetails = splitDetails.filter((_, i) => i !== index)
-    setSplitDetails(updatedSplitDetails)
   }
 
   return (
@@ -238,69 +217,6 @@ export function EditTransactionModal({ transaction, onClose }) {
                 />
               </div>
             </div>
-
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={isSplit}
-                  onChange={(e) => setIsSplit(e.target.checked)}
-                  className="mr-2"
-                />
-                Split transaction
-              </label>
-            </div>
-
-            {isSplit && (
-              <div>
-                <h4 className="text-md font-medium mb-2">Split Details</h4>
-                {splitDetails.map((detail, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <input
-                      type="text"
-                      value={detail.name}
-                      onChange={(e) => handleSplitDetailChange(index, 'name', e.target.value)}
-                      placeholder="Name"
-                      className="mr-2 p-1 border rounded"
-                    />
-                    <input
-                      type="number"
-                      value={detail.amount}
-                      onChange={(e) => handleSplitDetailChange(index, 'amount', parseFloat(e.target.value))}
-                      placeholder="Amount"
-                      className="mr-2 p-1 border rounded"
-                    />
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={detail.paid}
-                        onChange={(e) => handleSplitDetailChange(index, 'paid', e.target.checked)}
-                        className="mr-1"
-                      />
-                      Paid
-                    </label>
-                    <button type="button" onClick={() => removeSplitDetail(index)} className="ml-2 text-red-500">
-                      Remove
-                    </button>
-                  </div>
-                ))}
-                <button type="button" onClick={addSplitDetail} className="mt-2 bg-blue-500 text-white px-2 py-1 rounded">
-                  Add Split Detail
-                </button>
-              </div>
-            )}
-
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={includeInTotal}
-                  onChange={(e) => setIncludeInTotal(e.target.checked)}
-                  className="mr-2"
-                />
-                Include in total
-              </label>
-            </div>
           </div>
           <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
             <button
@@ -330,15 +246,6 @@ EditTransactionModal.propTypes = {
     amount: PropTypes.number.isRequired,
     date: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    isSplit: PropTypes.bool,
-    splitDetails: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        amount: PropTypes.number.isRequired,
-        paid: PropTypes.bool.isRequired,
-      })
-    ),
-    includeInTotal: PropTypes.bool,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
 }

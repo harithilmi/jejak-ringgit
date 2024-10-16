@@ -6,9 +6,7 @@ export function NewTransactionForm() {
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState('')
   const [type, setType] = useState('expense')
-  const [isSplit, setIsSplit] = useState(false)
-  const [splitDetails, setSplitDetails] = useState([])
-  const [includeInTotal, setIncludeInTotal] = useState(true)
+
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
   const dropdownRef = useRef(null)
@@ -80,14 +78,11 @@ export function NewTransactionForm() {
   function handleSubmit(e) {
     e.preventDefault()
     if (description === '' || amount === '') return
-    addTransaction(description, parseFloat(amount) / 100, date, type, isSplit, splitDetails, includeInTotal)
+    addTransaction(description, parseFloat(amount) / 100, date, type)
     // Reset form fields
     setDescription('')
     setAmount('')
     setType('expense')
-    setIsSplit(false)
-    setSplitDetails([])
-    setIncludeInTotal(true)
     const currentDate = new Date().toISOString().split('T')[0]
     setDate(currentDate)
     
@@ -111,21 +106,6 @@ export function NewTransactionForm() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numericValue / 100)
-  }
-
-  function handleSplitDetailChange(index, field, value) {
-    const updatedSplitDetails = [...splitDetails]
-    updatedSplitDetails[index][field] = value
-    setSplitDetails(updatedSplitDetails)
-  }
-
-  function addSplitDetail() {
-    setSplitDetails([...splitDetails, { name: '', amount: '', paid: false }])
-  }
-
-  function removeSplitDetail(index) {
-    const updatedSplitDetails = splitDetails.filter((_, i) => i !== index)
-    setSplitDetails(updatedSplitDetails)
   }
 
   return (
@@ -255,69 +235,6 @@ export function NewTransactionForm() {
               />
             </div>
           </div>
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={isSplit}
-              onChange={(e) => setIsSplit(e.target.checked)}
-              className="mr-2"
-            />
-            Split transaction
-          </label>
-        </div>
-
-        {isSplit && (
-          <div className="sm:col-span-6">
-            <h3 className="text-lg font-medium mb-2">Split Details</h3>
-            {splitDetails.map((detail, index) => (
-              <div key={index} className="flex items-center mb-2">
-                <input
-                  type="text"
-                  value={detail.name}
-                  onChange={(e) => handleSplitDetailChange(index, 'name', e.target.value)}
-                  placeholder="Name"
-                  className="mr-2 p-1 border rounded"
-                />
-                <input
-                  type="number"
-                  value={detail.amount}
-                  onChange={(e) => handleSplitDetailChange(index, 'amount', e.target.value)}
-                  placeholder="Amount"
-                  className="mr-2 p-1 border rounded"
-                />
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={detail.paid}
-                    onChange={(e) => handleSplitDetailChange(index, 'paid', e.target.checked)}
-                    className="mr-1"
-                  />
-                  Paid
-                </label>
-                <button type="button" onClick={() => removeSplitDetail(index)} className="ml-2 text-red-500">
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button type="button" onClick={addSplitDetail} className="mt-2 bg-blue-500 text-white px-2 py-1 rounded">
-              Add Split Detail
-            </button>
-          </div>
-        )}
-
-        <div className="sm:col-span-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={includeInTotal}
-              onChange={(e) => setIncludeInTotal(e.target.checked)}
-              className="mr-2"
-            />
-            Include in total
-          </label>
         </div>
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-6">

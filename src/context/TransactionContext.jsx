@@ -1,4 +1,5 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useReducer } from 'react'
+import PropTypes from 'prop-types'
 
 export const TransactionContext = createContext()
 
@@ -9,13 +10,7 @@ export function transactionReducer(state, action) {
     case 'ADD_TRANSACTION':
       return [
         ...state,
-        {
-          id: Date.now(),
-          description: action.payload.description,
-          amount: action.payload.amount,
-          date: action.payload.date,
-          type: action.payload.type,
-        },
+        action.payload
       ]
     case 'DELETE_TRANSACTION':
       return state.filter((transaction) => transaction.id !== action.payload)
@@ -25,9 +20,31 @@ export function transactionReducer(state, action) {
           ? { ...transaction, ...action.payload.updatedTransaction }
           : transaction,
       )
+    case 'SET_TRANSACTIONS':
+      return action.payload
     default:
       return state
   }
 }
 
-export const useTransaction = () => useContext(TransactionContext)
+export function TransactionProvider({ children }) {
+  const [state, dispatch] = useReducer(transactionReducer, initialState)
+
+  return (
+    <TransactionContext.Provider value={{ state, dispatch }}>
+      {children}
+    </TransactionContext.Provider>
+  )
+}
+
+export function useTransaction() {
+  const context = useContext(TransactionContext)
+  if (context === undefined) {
+    throw new Error('useTransaction must be used within a TransactionProvider')
+  }
+  return context
+}
+
+TransactionProvider.propTypes = {
+	children: PropTypes.node
+}

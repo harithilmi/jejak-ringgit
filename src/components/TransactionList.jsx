@@ -2,44 +2,18 @@ import { useTransaction } from '../context/TransactionContext'
 import CurrencyFormat from './CurrencyFormat'
 import { useState } from 'react'
 import { EditTransactionModal } from './EditTransactionModal'
-import { SplitTransactionDetails } from './SplitTransactionDetails'
 
 export function TransactionList() {
   const { transactions, deleteTransaction } = useTransaction()
-  const [sortBy, setSortBy] = useState('date')
-  const [sortOrder, setSortOrder] = useState('desc')
   const [filterText, setFilterText] = useState('')
   const [isFilterVisible, setIsFilterVisible] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState(null)
 
-  const sortedAndFilteredTransactions = transactions
+  const filteredTransactions = transactions
     .filter(transaction => 
       transaction.description.toLowerCase().includes(filterText.toLowerCase())
     )
-    .sort((a, b) => {
-      if (sortBy === 'date') {
-        return sortOrder === 'asc' 
-          ? new Date(a.date) - new Date(b.date)
-          : new Date(b.date) - new Date(a.date)
-      } else if (sortBy === 'amount') {
-        return sortOrder === 'asc' ? a.amount - b.amount : b.amount - a.amount
-      } else if (sortBy === 'description') {
-        return sortOrder === 'asc' 
-          ? a.description.localeCompare(b.description)
-          : b.description.localeCompare(a.description)
-      }
-      return 0
-    })
-
-  const handleSort = (field) => {
-    if (field === sortBy) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortBy(field)
-      setSortOrder('asc')
-    }
-  }
 
   const handleEditClick = (transaction) => {
     setEditingTransaction(transaction)
@@ -75,21 +49,20 @@ export function TransactionList() {
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2 w-2/5">Description</th>
-              <th className="px-4 py-2 w-1/5">Amount</th>
-              <th className="px-4 py-2 w-1/5">Date</th>
-              <th className="px-4 py-2 w-1/5">Type</th>
-              <th className="px-4 py-2 w-1/5">Split</th>
-              <th className="px-4 py-2 w-1/5">Actions</th>
+              <th className="px-4 py-2">Description</th>
+              <th className="px-4 py-2">Amount</th>
+              <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Type</th>
+              <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {sortedAndFilteredTransactions.length === 0 ? (
+            {filteredTransactions.length === 0 ? (
               <tr>
                 <td colSpan="6" className="text-center py-4">No Transactions</td>
               </tr>
             ) : (
-              sortedAndFilteredTransactions.map((transaction) => (
+              filteredTransactions.map((transaction) => (
                 <tr key={transaction.id} className="border-b">
                   <td className="px-4 py-2 truncate">{transaction.description}</td>
                   <td className="px-4 py-2">
@@ -103,13 +76,6 @@ export function TransactionList() {
                   </td>
                   <td className="px-4 py-2 text-center">{new Date(transaction.date).toLocaleDateString()}</td>
                   <td className="px-4 py-2 text-center">{transaction.type}</td>
-                  <td className="px-4 py-2 text-center">
-                    {transaction.isSplit ? (
-                      <SplitTransactionDetails transaction={transaction} />
-                    ) : (
-                      'N/A'
-                    )}
-                  </td>
                   <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => handleEditClick(transaction)}

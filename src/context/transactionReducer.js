@@ -30,6 +30,8 @@ export function transactionReducer(state, action) {
 					}
 					: transaction,
 			)
+		case 'SET_TRANSACTIONS':
+			return action.payload
 		default:
 			return state
 	}
