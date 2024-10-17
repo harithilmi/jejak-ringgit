@@ -4,7 +4,7 @@ Jejak Ringgit is a personal finance tracking application built with React and Vi
 
 ## Live Demo
 
-Check out the live application: [Jejak Ringgit on Netlify](https://jejak-ringgit.netlify.app)
+Check out the live application: [Jejak Ringgit on Netlify](https://jejakringgit.netlify.app)
 
 ## Features
 
