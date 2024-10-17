@@ -2,14 +2,19 @@
 
 Jejak Ringgit is a personal finance tracking application built with React and Vite. It allows users to manage their income and expenses efficiently.
 
+## Live Demo
+
+Check out the live application: [Jejak Ringgit on Netlify](https://jejak-ringgit.netlify.app)
+
 ## Features
 
 - Add, edit, and delete transactions
 - Categorize transactions as income or expense
-- Sort transactions by date, amount, or description
 - Filter transactions by description
+- Split transactions among multiple parties
 - Responsive design for various screen sizes
 - Local storage persistence
+- User authentication with Supabase
 
 ## Technologies Used
 
@@ -17,6 +22,7 @@ Jejak Ringgit is a personal finance tracking application built with React and Vi
 - Vite 5.4
 - Tailwind CSS 3.4
 - ESLint 9.9
+- Supabase for authentication and data storage
 
 ## Getting Started
 
@@ -38,12 +44,19 @@ Jejak Ringgit is a personal finance tracking application built with React and Vi
    npm install
    ```
 
-3. Start the development server:
+3. Set up environment variables:
+   Create a `.env` file in the root directory and add your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. Start the development server:
    ```
    npm run dev
    ```
 
-4. Open your browser and visit `http://localhost:5173` to see the application.
+5. Open your browser and visit `http://localhost:5173` to see the application.
 
 ## Project Structure
 
