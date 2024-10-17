@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-src/supabase.js
 .env
 .env.local
 .env.*.local
