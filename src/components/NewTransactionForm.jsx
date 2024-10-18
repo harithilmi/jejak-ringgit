@@ -59,7 +59,7 @@ export function NewTransactionForm() {
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Expense description"
+          placeholder="Transaction description"
           className="sm:col-span-2"
         />
 

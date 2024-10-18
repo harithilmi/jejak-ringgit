@@ -19,12 +19,9 @@ export default function Navbar({ user, onLogout }) {
 						<a href="/" className="flex-shrink-0">
 							JR
 						</a>
-						<div className="ml-10 flex items-baseline space-x-4">
-							<a href="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500">Home</a>
-							<a href="/expenses" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500">Expenses</a>
-							<a href="/reports" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500">Reports</a>
-						</div>
+						
 					</div>
+					
 					<div className="flex items-center">
 						{user && (
 							<>
