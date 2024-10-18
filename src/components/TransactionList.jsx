@@ -52,14 +52,13 @@ export function TransactionList() {
               <th className="px-4 py-2">Description</th>
               <th className="px-4 py-2">Amount</th>
               <th className="px-4 py-2">Date</th>
-              <th className="px-4 py-2">Type</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredTransactions.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center py-4">No Transactions</td>
+                <td colSpan="4" className="text-center py-4">No Transactions</td>
               </tr>
             ) : (
               filteredTransactions.map((transaction) => (
@@ -67,6 +66,7 @@ export function TransactionList() {
                   <td className="px-4 py-2 truncate">{transaction.description}</td>
                   <td className="px-4 py-2">
                     <div className={`flex justify-end items-baseline ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className="mr-1">{transaction.type === 'income' ? '▴' : '▾'}</span>
                       <span className="mr-1 w-6 text-right">RM</span>
                       <CurrencyFormat
                         value={transaction.amount}
@@ -75,7 +75,6 @@ export function TransactionList() {
                     </div>
                   </td>
                   <td className="px-4 py-2 text-center">{new Date(transaction.date).toLocaleDateString()}</td>
-                  <td className="px-4 py-2 text-center">{transaction.type}</td>
                   <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => handleEditClick(transaction)}
