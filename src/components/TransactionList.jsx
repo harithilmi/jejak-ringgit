@@ -2,12 +2,12 @@ import { useTransaction } from '../context/TransactionContext'
 import CurrencyFormat from './CurrencyFormat'
 import { useState } from 'react'
 import { EditTransactionModal } from './EditTransactionModal'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 export function TransactionList() {
   const { transactions, deleteTransaction } = useTransaction()
   const [filterText, setFilterText] = useState('')
   const [isFilterVisible, setIsFilterVisible] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState(null)
 
   const filteredTransactions = transactions
@@ -17,33 +17,30 @@ export function TransactionList() {
 
   const handleEditClick = (transaction) => {
     setEditingTransaction(transaction)
-    setIsEditModalOpen(true)
   }
 
   const handleEditClose = () => {
-    setIsEditModalOpen(false)
     setEditingTransaction(null)
   }
 
   return (
     <div className="mt-8">
-      <div className="mb-4 flex items-center">
-        <button
-          onClick={() => setIsFilterVisible(!isFilterVisible)}
-          className="rounded-md align-middle bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          <span className="mr-2">&#9776;</span>
-          Filter
-        </button>
+      <div className="mb-4 flex items-center justify-end">
         {isFilterVisible && (
           <input
             type="text"
-            placeholder="Filter expenses..."
+            placeholder="Search transactions"
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
-            className="ml-2 px-2 py-1 border rounded"
+            className="px-2 py-1 border rounded w-64 mr-2"
           />
         )}
+        <button
+          onClick={() => setIsFilterVisible(!isFilterVisible)}
+          className="rounded-md bg-indigo-600 p-2 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex-shrink-0"
+        >
+          <MagnifyingGlassIcon className="h-5 w-5" />
+        </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
@@ -95,7 +92,7 @@ export function TransactionList() {
           </tbody>
         </table>
       </div>
-      {isEditModalOpen && (
+      {editingTransaction && (
         <EditTransactionModal
           transaction={editingTransaction}
           onClose={handleEditClose}
