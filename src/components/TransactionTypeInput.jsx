@@ -1,14 +1,6 @@
-import {
-  Label,
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-  Transition,
-} from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import PropTypes from 'prop-types'
-import { Fragment } from 'react'
 
 const typeOptions = [
   { value: 'expense', label: 'Expense', icon: '💸' },
@@ -16,85 +8,63 @@ const typeOptions = [
 ]
 
 export function TransactionTypeInput({ value, onChange, className = '' }) {
+  const selectedOption = typeOptions.find(option => option.value === value)
+
   return (
     <div className={className}>
-      <Listbox value={value} onChange={onChange}>
-        {({ open }) => (
+      <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+        Type
+      </label>
+      <Menu as="div" className="relative inline-block text-left w-full">
+        {({ open, close }) => (
           <>
-            <Label className="block text-sm font-medium leading-6 text-gray-900">
-              Type
-            </Label>
-            <div className="relative mt-2">
-              <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <div>
+              <MenuButton className="inline-flex w-full justify-between items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                 <span className="flex items-center">
-                  <span className="ml-3 block truncate">
-                    {typeOptions.find((option) => option.value === value)?.icon}{' '}
-                    {
-                      typeOptions.find((option) => option.value === value)
-                        ?.label
-                    }
-                  </span>
+                  {selectedOption.icon} {selectedOption.label}
                 </span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </span>
-              </ListboxButton>
-
-              <Transition
-                show={open}
-                as={Fragment}
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                  {typeOptions.map((option) => (
-                    <ListboxOption
-                      key={option.value}
-                      className={({ active }) =>
-                        `relative cursor-default select-none py-2 pl-3 pr-9 ${
-                          active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                        }`
-                      }
-                      value={option.value}
-                    >
-                      {({ selected, active }) => (
-                        <>
-                          <div className="flex items-center">
-                            <span
-                              className={`ml-3 block truncate ${
-                                selected ? 'font-semibold' : 'font-normal'
-                              }`}
-                            >
-                              {option.icon} {option.label}
-                            </span>
-                          </div>
-
-                          {selected ? (
-                            <span
-                              className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
-                                active ? 'text-white' : 'text-indigo-600'
-                              }`}
-                            >
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          ) : null}
-                        </>
-                      )}
-                    </ListboxOption>
-                  ))}
-                </ListboxOptions>
-              </Transition>
+                <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+              </MenuButton>
             </div>
+
+            <Transition
+              show={open}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <MenuItems
+                className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              >
+                <div className="py-1">
+                  {typeOptions.map((option) => (
+                    <MenuItem key={option.value}>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={`${
+                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                          } block px-4 py-2 text-sm`}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            onChange(option.value)
+                            close() // Close the menu after selection
+                          }}
+                        >
+                          {option.icon} {option.label}
+                        </a>
+                      )}
+                    </MenuItem>
+                  ))}
+                </div>
+              </MenuItems>
+            </Transition>
           </>
         )}
-      </Listbox>
+      </Menu>
     </div>
   )
 }
